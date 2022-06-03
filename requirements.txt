@@ -1,6 +1,6 @@
 jupyter
-opencv-python
-matplotlib
+opencv
 numpy
 scikit-learn
 scikit-image
+matplotlib
