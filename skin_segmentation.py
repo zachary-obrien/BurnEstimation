@@ -1,8 +1,18 @@
 import cv2
 import numpy as np
+import glob
+from converter import RGB_TO_HSI
 
-def get_skin(input_image, min_h=0, max_h=50):
-    hsi_image = cv2.cvtColor(input_image, cv2.COLOR_RGB2HLS)
+def load_rgb_image(filename):
+    return cv2.cvtColor(cv2.imread(filename), cv2.COLOR_BGR2RGB)
+
+def import_image_folder(img_folder):
+    images = glob.glob(img_folder + "*.jpg")
+    return images
+
+def get_skin(input_image, min_h=5, max_h=25):
+    #hsi_image = cv2.cvtColor(input_image, cv2.COLOR_RGB2HLS)
+    hsi_image = RGB_TO_HSI(input_image, BGR=False)
     output_shape = list(hsi_image.shape[0:2])
     empty_image = np.zeros(tuple(output_shape), dtype='uint16')
     for row in range(0,hsi_image.shape[0]):
@@ -27,5 +37,10 @@ def erode_and_dilate(img):
     return mask
 
 def apply_mask(image, mask):
-    masked = cv2.bitwise_and(image, image, mask=mask)
-    return masked
+    empty = np.zeros(image.shape)
+    for row in range(0,mask.shape[0]):
+        for col in range(0,mask.shape[1]):
+            if mask[row,col] > 0:
+                empty[row,col] = image[row,col]
+    #masked = cv2.bitwise_and(image, image, mask=mask)
+    return empty
