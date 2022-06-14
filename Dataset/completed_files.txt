@@ -18,3 +18,4 @@
 ./Dataset/full_coco/images/img115.jpg
 ./Dataset/full_coco/images/img116.jpg
 ./Dataset/full_coco/images/img117.jpg
+./Dataset/full_coco/images/img118.jpg
