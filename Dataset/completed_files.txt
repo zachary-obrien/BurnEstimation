@@ -112,3 +112,6 @@
 ./Dataset/full_coco/images/img20.jpg
 ./Dataset/full_coco/images/img200.jpg
 ./Dataset/full_coco/images/img21.jpg
+./Dataset/full_coco/images/img22.jpg
+./Dataset/full_coco/images/img23.jpg
+./Dataset/full_coco/images/img24.jpg
