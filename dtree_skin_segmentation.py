@@ -58,7 +58,7 @@ def RGB_TO_HSI(img, BGR=False):
         hsi = cv2.merge((calc_hue(red, blue, green), calc_saturation(red, blue, green), calc_intensity(red, blue, green)))
         return hsi
 
-def image_masks(rgb_image):
+def image_masks(rgb_image, aggression=0.9):
     loaded_model = pickle.load(open(model_loc, 'rb'))
     print("Loaded Model is:", model_loc)
     background = np.zeros(rgb_image.shape[:2])
@@ -72,12 +72,17 @@ def image_masks(rgb_image):
                 background[row,col] = 1
             else:
                 prediction = loaded_model.predict([test_image_hsi[row,col]])
+                score = loaded_model.predict_proba([test_image_hsi[row,col]])
                 if prediction == 0:
                     background[row,col] = 1
-                elif prediction == 1:
+                elif prediction == 1 and score[0][1] > aggression:
                     skin[row,col] = 1
-                elif prediction == 2:
+                    #print("Skin Score:", score)
+                elif prediction == 2 and score[0][2] > aggression:
                     burn[row,col] = 1
+                    #print("Burn Score:", score)
+                else:
+                    background[row,col] = 1
     return background, skin, burn
 
 def dilate_and_erode(mask, erosion=4, dilation=2):
@@ -99,11 +104,11 @@ def erode_and_dilation(mask, erosion=2, dilation=2):
     return img_dilation
 
 
-def skin_overlay(rgb_image, return_mask=False):
-    background, skin, burn = image_masks(rgb_image)
+def skin_overlay(rgb_image, return_mask=False, aggression=0.5, skin_dilation=2, skin_erosion=4, burn_dilation=2, burn_erosion=4):
+    background, skin, burn = image_masks(rgb_image, aggression)
     background_processed = erode_and_dilation(background)
-    skin_processed = dilate_and_erode(skin)
-    burn_processed = dilate_and_erode(burn)
+    skin_processed = dilate_and_erode(skin, dilation=skin_dilation, erosion=skin_erosion)
+    burn_processed = dilate_and_erode(burn, dilation=burn_dilation, erosion=burn_erosion)
     class_mask = np.zeros(rgb_image.shape[:2])
     img_copy = np.zeros(rgb_image.shape)
 
@@ -124,4 +129,3 @@ def skin_overlay(rgb_image, return_mask=False):
         return fused_img, class_mask
     else:
         return fused_img
-
