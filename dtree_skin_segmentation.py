@@ -104,7 +104,7 @@ def erode_and_dilation(mask, erosion=2, dilation=2):
     return img_dilation
 
 
-def skin_overlay(rgb_image, return_mask=False, aggression=0.5, skin_dilation=2, skin_erosion=4, burn_dilation=2, burn_erosion=4):
+def skin_overlay(rgb_image, skin_only=False, return_mask=False, aggression=0.5, skin_dilation=2, skin_erosion=4, burn_dilation=2, burn_erosion=4):
     background, skin, burn = image_masks(rgb_image, aggression)
     background_processed = erode_and_dilation(background)
     skin_processed = dilate_and_erode(skin, dilation=skin_dilation, erosion=skin_erosion)
@@ -123,8 +123,12 @@ def skin_overlay(rgb_image, return_mask=False, aggression=0.5, skin_dilation=2, 
             elif background_processed[row,col] > 0:
                 img_copy[row,col] = (0, 0, 0)
                 class_mask[row,col] = 0
-    img_copy_converted = img_copy.astype('uint8')
-    fused_img = cv2.addWeighted(rgb_image, 0.8, img_copy_converted, 0.2, 0)
+    if skin_only:
+        print("remove background")
+    else:
+        img_copy_converted = img_copy.astype('uint8')
+        fused_img = cv2.addWeighted(rgb_image, 0.8, img_copy_converted, 0.2, 0)
+
     if return_mask:
         return fused_img, class_mask
     else:
