@@ -1,0 +1,4 @@
+./Dataset/full_coco/images/img10.jpg
+./Dataset/full_coco/images/img100.jpg
+./Dataset/full_coco/images/img101.jpg
+./Dataset/full_coco/images/img102.jpg
